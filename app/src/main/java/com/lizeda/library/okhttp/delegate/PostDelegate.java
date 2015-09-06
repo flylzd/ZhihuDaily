@@ -1,5 +1,6 @@
-package com.lizeda.library.okhttp;
+package com.lizeda.library.okhttp.delegate;
 
+import com.lizeda.library.okhttp.ResultCallback;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
