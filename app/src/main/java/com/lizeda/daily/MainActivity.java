@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.lizeda.library.http.HttpClient;
+import com.lizeda.library.http.callback.StringCallback;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
@@ -40,7 +42,18 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-
+//        HttpClient httpClient = HttpClient.getDefault();
+//        try {
+//            httpClient.get("http://www.baidu.com", new StringCallback(){
+//                @Override
+//                public void onSuccess(String responseString) {
+//
+//                    System.out.println("responseString == " + responseString );
+//                }
+//            },MainActivity.this);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
