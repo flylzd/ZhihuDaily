@@ -44,17 +44,15 @@ public abstract class AsyncHttpResponseHandler implements ResponseHandlerInterfa
      * @param headers      return headers, if any
      * @param responseBody the body of the HTTP response from the server
      */
-    public abstract void onSuccess(int statusCode, Header[] headers, byte[] responseBody);
+    public abstract void onSuccess(int statusCode, byte[] responseBody);
 
     /**
      * Fired when a request fails to complete, override to handle in your own code
      *
-     * @param statusCode   return HTTP status code
-     * @param headers      return headers, if any
      * @param responseBody the response body, if any
      * @param error        the underlying cause of the failure
      */
-    public abstract void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error);
+    public abstract void onFailure(String responseBody, Throwable error);
 
 
     public void onCancel() {
@@ -62,7 +60,7 @@ public abstract class AsyncHttpResponseHandler implements ResponseHandlerInterfa
     }
 
     public void onUserException(Throwable error) {
-       Logger.e(LOG_TAG, "User-space exception detected!", error);
+        Logger.e(LOG_TAG, "User-space exception detected!", error);
         throw new RuntimeException(error);
     }
 
@@ -72,13 +70,13 @@ public abstract class AsyncHttpResponseHandler implements ResponseHandlerInterfa
 //    }
 
     @Override
-    final public void sendSuccessMessage(int statusCode, Header[] headers, byte[] responseBytes) {
-        sendMessage(obtainMessage(SUCCESS_MESSAGE, new Object[]{statusCode, headers, responseBytes}));
+    final public void sendSuccessMessage(int statusCode, byte[] responseBytes) {
+        sendMessage(obtainMessage(SUCCESS_MESSAGE, new Object[]{statusCode, responseBytes}));
     }
 
     @Override
-    final public void sendFailureMessage(int statusCode, Header[] headers, byte[] responseBody, Throwable throwable) {
-        sendMessage(obtainMessage(FAILURE_MESSAGE, new Object[]{statusCode, headers, responseBody, throwable}));
+    final public void sendFailureMessage(String responseBody, Throwable throwable) {
+        sendMessage(obtainMessage(FAILURE_MESSAGE, new Object[]{responseBody, throwable}));
     }
 
     @Override
@@ -102,7 +100,7 @@ public abstract class AsyncHttpResponseHandler implements ResponseHandlerInterfa
     }
 
 
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message message) {
             Object[] response;
@@ -111,16 +109,16 @@ public abstract class AsyncHttpResponseHandler implements ResponseHandlerInterfa
                 switch (message.what) {
                     case SUCCESS_MESSAGE:
                         response = (Object[]) message.obj;
-                        if (response != null && response.length >= 3) {
-                            onSuccess((Integer) response[0], (Header[]) response[1], (byte[]) response[2]);
+                        if (response != null && response.length >= 2) {
+                            onSuccess((Integer) response[0], (byte[]) response[1]);
                         } else {
                             Logger.e(LOG_TAG, "SUCCESS_MESSAGE didn't got enough params");
                         }
                         break;
                     case FAILURE_MESSAGE:
                         response = (Object[]) message.obj;
-                        if (response != null && response.length >= 4) {
-                            onFailure((Integer) response[0], (Header[]) response[1], (byte[]) response[2], (Throwable) response[3]);
+                        if (response != null && response.length >= 2) {
+                            onFailure((String) response[0], (Throwable) response[1]);
                         } else {
                             Logger.e(LOG_TAG, "FAILURE_MESSAGE didn't got enough params");
                         }

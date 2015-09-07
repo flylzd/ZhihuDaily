@@ -48,7 +48,7 @@ public interface  ResponseHandlerInterface {
      * @param headers      returned headers
      * @param responseBody returned data
      */
-    void sendSuccessMessage(int statusCode, Header[] headers, byte[] responseBody);
+    void sendSuccessMessage(int statusCode,  byte[] responseBody);
 
     /**
      * Returns if request was completed with error code or failure of implementation
@@ -58,5 +58,9 @@ public interface  ResponseHandlerInterface {
      * @param responseBody returned data
      * @param error        cause of request failure
      */
-    void sendFailureMessage(int statusCode, Header[] headers, byte[] responseBody, Throwable error);
+//    void sendFailureMessage(int statusCode, Header[] headers, byte[] responseBody, Throwable error);
+
+
+    void sendFailureMessage(String responseBody, Throwable error);
+
 }
