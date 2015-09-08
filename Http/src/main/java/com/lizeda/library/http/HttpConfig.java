@@ -1,16 +1,19 @@
-package com.lizeda.library.okhttp;
+package com.lizeda.library.http;
 
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.CacheControl;
 
 import java.io.File;
+import java.net.CookieStore;
 import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
 
 /**
- * http连接配置类
+ * 作者：lemon
+ * 日期：2015-09-08
  */
 public class HttpConfig {
+
 
     public long connectTimeout=10 * 1000; // 连接超时
 
@@ -28,12 +31,11 @@ public class HttpConfig {
 
     private Cache responseCache; // response 缓存
 
-//    private PersistentCookieStore cookieStore; // cookie handler
+//    private CookieStore cookieStore; // cookie handler
 
     private Proxy proxy; // proxy
 
     private String[][] headers;
-
 
     public Proxy getProxy() {
         return proxy;
@@ -42,12 +44,12 @@ public class HttpConfig {
     public void setProxy(Proxy proxy) {
         this.proxy=proxy;
     }
-//
-//    public PersistentCookieStore getCookieStore() {
+
+//    public CookieStore getCookieStore() {
 //        return cookieStore;
 //    }
 //
-//    public void setCookieStore(PersistentCookieStore cookieStore) {
+//    public void setCookieStore(CookieStore cookieStore) {
 //        this.cookieStore=cookieStore;
 //    }
 
@@ -123,8 +125,6 @@ public class HttpConfig {
     public void setNewCacheControlWithStale(int days) {
         this.requestCacheControl=new CacheControl.Builder().maxStale(days, TimeUnit.DAYS).build();
     }
-
-
 
     /**
      * 连接池配置类

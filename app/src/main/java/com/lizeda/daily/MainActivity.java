@@ -5,14 +5,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.lizeda.library.http.HttpClient;
-import com.lizeda.library.http.callback.StringCallback;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import com.lizeda.library.http.AsyncOKHttpClient;
+import com.lizeda.library.http.callback.GsonCallback;
 
 import java.io.IOException;
 
@@ -24,36 +18,81 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        OkHttpClient okHttpClient = new OkHttpClient();
-        Request.Builder builder = new Request.Builder();
-        builder.url("http://www.baidu.com");
+//        OkHttpClient okHttpClient = new OkHttpClient();
+//        Request.Builder builder = new Request.Builder();
+//        builder.url("http://www.baidu.com");
+//
+//        Request request = builder.build();
+//        okHttpClient.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Request request, IOException e) {
+//
+//            }
+//
+//            @Override
+//            public void onResponse(Response response) throws IOException {
+//
+//                System.out.println(response.body().string());
+//            }
+//        });
 
-        Request request = builder.build();
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-
-                System.out.println(response.body().string());
-            }
-        });
-
-//        HttpClient httpClient = HttpClient.getDefault();
+        AsyncOKHttpClient httpClient = AsyncOKHttpClient.getDefault();
 //        try {
 //            httpClient.get("http://www.baidu.com", new StringCallback(){
+//
+//                @Override
+//                public void onFinish() {
+//                    System.out.println("httpClient.get.StringCallback onFinish  ");
+//                }
+//
+//                @Override
+//                public void onStart() {
+//                    System.out.println("httpClient.get.StringCallback onStart  ");
+//                }
+//
 //                @Override
 //                public void onSuccess(String responseString) {
 //
 //                    System.out.println("responseString == " + responseString );
+//                    System.out.println("httpClient.get.StringCallback onSuccess  ");
 //                }
 //            },MainActivity.this);
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+
+        try {
+            httpClient.get("http://www.weather.com.cn/adat/sk/101010100.html", new GsonCallback<Weather>() {
+
+                @Override
+                public void onFinish() {
+                    System.out.println("httpClient.get.StringCallback onFinish  ");
+                }
+
+                @Override
+                public void onStart() {
+                    System.out.println("httpClient.get.StringCallback onStart  ");
+                }
+
+                @Override
+                public void onSuccess(Weather responseJson) {
+//                    super.onSuccess(responseJson);
+
+                    System.out.println("httpClient.get.StringCallback onSuccess  " + responseJson.toString());
+
+                }
+
+                //                @Override
+//                public void onSuccess(String responseString) {
+//
+//                    System.out.println("responseString == " + responseString);
+//                    System.out.println("httpClient.get.StringCallback onSuccess  ");
+//                }
+            }, MainActivity.this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 

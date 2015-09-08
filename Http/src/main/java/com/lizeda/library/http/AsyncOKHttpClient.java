@@ -17,29 +17,67 @@ import javax.net.SocketFactory;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
-public final class HttpClient {
+public final class AsyncOKHttpClient {
 
     static class SingletonHolder {
-        static HttpClient INSTANCE = new HttpClient();
+        static AsyncOKHttpClient INSTANCE = new AsyncOKHttpClient();
     }
 
-    public static HttpClient getDefault() {
+    public static AsyncOKHttpClient getDefault() {
         return SingletonHolder.INSTANCE;
     }
 
-    public static final String TAG = HttpClient.class.getSimpleName();
-    private boolean mDebug;
+    public static final String TAG = AsyncOKHttpClient.class.getSimpleName();
+
+    private boolean isDebug = BuildConfig.DEBUG;
     private final OkHttpClient mClient;
+    //    private HttpConfig mHttpConfig;
     private OkClientInterceptor mInterceptor;
-    private Map<String, String> mParams;
+
+    //    private Map<String, String> mParams;
     private Map<String, String> mHeaders;
 
-    public HttpClient() {
+    public AsyncOKHttpClient() {
         mClient = new OkHttpClient();
         mClient.setFollowRedirects(true);
-        mParams = new NoEmptyValuesHashMap();
+//        mParams = new NoEmptyValuesHashMap();
         mHeaders = new NoEmptyValuesHashMap();
     }
+
+
+//    /**
+//     * 获取httpConfig配置
+//     *
+//     * @return
+//     */
+//    public HttpConfig getHttpConfig() {
+//        return mHttpConfig;
+//    }
+//
+//    /**
+//     * 设置默认http config
+//     */
+//    public void setDefaultHttpConfig() {
+//        this.mHttpConfig = new HttpConfig();
+//        this.mHttpConfig.setHttpPoolConfig();
+//        this.mHttpConfig.setNewCacheControlWithNoCache();
+////        this.mHttpConfig.setCookieStore(new PersistentCookieStore(mContext));
+//        this.initOkHttpClient(mClient, mHttpConfig);
+//    }
+//
+//    // 初始化OkHttpClient
+//    private void initOkHttpClient(OkHttpClient client, HttpConfig httpConfig) {
+//        client.setConnectionPool(new ConnectionPool(httpConfig.getHttpPoolConfig().getMaxIdleConnections(), httpConfig
+//                .getHttpPoolConfig().getKeepAliveDurationMs()));
+//        client.setConnectTimeout(httpConfig.connectTimeout, TimeUnit.MILLISECONDS);
+//        client.setWriteTimeout(httpConfig.writeTimeout, TimeUnit.MILLISECONDS);
+//        client.setReadTimeout(httpConfig.readTimeout, TimeUnit.MILLISECONDS);
+////        client.setProxy(httpConfig.getProxy());
+////        client.setCookieHandler(new CookieManager(httpConfig.getCookieStore(), CookiePolicy.ACCEPT_ALL));
+//        client.setCache(httpConfig.getResponseCache());
+//        //cookie enabled
+//        client.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ORIGINAL_SERVER));
+//    }
 
 
     /**
@@ -48,93 +86,91 @@ public final class HttpClient {
      * **********************************************************
      */
 
-    public String getParam(final String key) {
-//        AssertUtils.notEmpty(key, "key must not be null or empty.");
-        return mParams.get(key);
-    }
-
-    public HttpClient addParam(final String key, final String value) {
-//        AssertUtils.notEmpty(key, "key must not be null or empty.");
-        mParams.put(key, value);
-        return this;
-    }
-
-    public HttpClient addParams(final Map<String, String> params) {
-//        AssertUtils.notNull(params, "params must not be null.");
-        mParams.putAll(params);
-        return this;
-    }
-
-    public HttpClient removeParam(final String key) {
-//        AssertUtils.notEmpty(key, "key must not be null or empty.");
-        mParams.remove(key);
-        return this;
-    }
-
-
-    public int getParamsSize() {
-        return mParams.size();
-    }
-
+//    public String getParam(final String key) {
+////        AssertUtils.notEmpty(key, "key must not be null or empty.");
+//        return mParams.get(key);
+//    }
+//
+//    public AsyncOKHttpClient addParam(final String key, final String value) {
+////        AssertUtils.notEmpty(key, "key must not be null or empty.");
+//        mParams.put(key, value);
+//        return this;
+//    }
+//
+//    public AsyncOKHttpClient addParams(final Map<String, String> params) {
+////        AssertUtils.notNull(params, "params must not be null.");
+//        mParams.putAll(params);
+//        return this;
+//    }
+//
+//    public AsyncOKHttpClient removeParam(final String key) {
+////        AssertUtils.notEmpty(key, "key must not be null or empty.");
+//        mParams.remove(key);
+//        return this;
+//    }
+//
+//    public int getParamsSize() {
+//        return mParams.size();
+//    }
     public String getHeader(final String key) {
 //        AssertUtils.notEmpty(key, "key must not be null or empty.");
         return mHeaders.get(key);
     }
 
-    public HttpClient addHeader(final String key, final String value) {
+    public AsyncOKHttpClient addHeader(final String key, final String value) {
 //        AssertUtils.notEmpty(key, "key must not be null or empty.");
         mHeaders.put(key, value);
         return this;
     }
 
-    public HttpClient addHeaders(final Map<String, String> headers) {
+    public AsyncOKHttpClient addHeaders(final Map<String, String> headers) {
 //        AssertUtils.notNull(headers, "headers must not be null.");
         mHeaders.putAll(headers);
         return this;
     }
 
-    public HttpClient removeHeader(final String key) {
+    public AsyncOKHttpClient removeHeader(final String key) {
 //        AssertUtils.notEmpty(key, "key must not be null or empty.");
         mHeaders.remove(key);
         return this;
     }
 
-
     public int getHeadersSize() {
         return mHeaders.size();
     }
 
-    public HttpClient setInterceptor(final OkClientInterceptor interceptor) {
+
+    public AsyncOKHttpClient setInterceptor(final OkClientInterceptor interceptor) {
         mInterceptor = interceptor;
         return this;
     }
 
-    public HttpClient setHostnameVerifier(HostnameVerifier hostnameVerifier) {
+    public AsyncOKHttpClient setHostnameVerifier(HostnameVerifier hostnameVerifier) {
         mClient.setHostnameVerifier(hostnameVerifier);
         return this;
     }
 
-    public HttpClient setSocketFactory(SocketFactory socketFactory) {
+    public AsyncOKHttpClient setSocketFactory(SocketFactory socketFactory) {
         mClient.setSocketFactory(socketFactory);
         return this;
     }
 
-    public HttpClient setSslSocketFactory(SSLSocketFactory sslSocketFactory) {
+    public AsyncOKHttpClient setSslSocketFactory(SSLSocketFactory sslSocketFactory) {
         mClient.setSslSocketFactory(sslSocketFactory);
         return this;
     }
 
-    public HttpClient setFollowRedirects(boolean followRedirects) {
+    public AsyncOKHttpClient setFollowRedirects(boolean followRedirects) {
         mClient.setFollowRedirects(followRedirects);
         return this;
     }
 
-    public HttpClient setFollowSslRedirects(boolean followProtocolRedirects) {
+    public AsyncOKHttpClient setFollowSslRedirects(boolean followProtocolRedirects) {
         mClient.setFollowSslRedirects(followProtocolRedirects);
         return this;
     }
 
-    public HttpClient setRetryOnConnectionFailure(boolean retryOnConnectionFailure) {
+    public AsyncOKHttpClient setRetryOnConnectionFailure(boolean retryOnConnectionFailure) {
         mClient.setRetryOnConnectionFailure(retryOnConnectionFailure);
         return this;
     }
@@ -151,17 +187,17 @@ public final class HttpClient {
         return mClient.getWriteTimeout();
     }
 
-    public HttpClient setConnectTimeout(long timeout, TimeUnit unit) {
+    public AsyncOKHttpClient setConnectTimeout(long timeout, TimeUnit unit) {
         mClient.setConnectTimeout(timeout, unit);
         return this;
     }
 
-    public HttpClient setReadTimeout(long timeout, TimeUnit unit) {
+    public AsyncOKHttpClient setReadTimeout(long timeout, TimeUnit unit) {
         mClient.setReadTimeout(timeout, unit);
         return this;
     }
 
-    public HttpClient setWriteTimeout(long timeout, TimeUnit unit) {
+    public AsyncOKHttpClient setWriteTimeout(long timeout, TimeUnit unit) {
         mClient.setWriteTimeout(timeout, unit);
         return this;
     }
@@ -170,7 +206,7 @@ public final class HttpClient {
         return getHeader(HttpConsts.USER_AGENT);
     }
 
-    public HttpClient setUserAgent(final String userAgent) {
+    public AsyncOKHttpClient setUserAgent(final String userAgent) {
         if (userAgent == null) {
             removeHeader(HttpConsts.USER_AGENT);
         } else {
@@ -183,12 +219,12 @@ public final class HttpClient {
         return getHeader(HttpConsts.AUTHORIZATION);
     }
 
-    public HttpClient setAuthorization(final String authorization) {
+    public AsyncOKHttpClient setAuthorization(final String authorization) {
         addHeader(HttpConsts.AUTHORIZATION, authorization);
         return this;
     }
 
-    public HttpClient removeAuthorization() {
+    public AsyncOKHttpClient removeAuthorization() {
         removeHeader(HttpConsts.AUTHORIZATION);
         return this;
     }
@@ -197,8 +233,13 @@ public final class HttpClient {
         return getHeader(HttpConsts.REFERER);
     }
 
-    public HttpClient setReferer(final String referer) {
+    public AsyncOKHttpClient setReferer(final String referer) {
         addHeader(HttpConsts.REFERER, referer);
+        return this;
+    }
+
+    public AsyncOKHttpClient cancel(Object tag) {
+        mClient.cancel(tag);
         return this;
     }
 
@@ -229,7 +270,7 @@ public final class HttpClient {
 
     public void get(final String url, final ResponseCallback responseCallback,
                     final Object tag) throws IOException {
-        get(url, null, responseCallback, tag);
+        get(url, null, null, responseCallback, tag);
     }
 
     public void get(final String url, final Map<String, String> queries, final ResponseCallback responseCallback,
@@ -276,8 +317,8 @@ public final class HttpClient {
     }
 
     // put params into url queries
-    public void deleteByQueryParams(final String url, final ResponseCallback responseCallback,
-                                    final Object tag) throws IOException {
+    public void delete(final String url, final ResponseCallback responseCallback,
+                       final Object tag) throws IOException {
         deleteByQueryParams(url, null, null, responseCallback, tag);
     }
 
@@ -312,30 +353,26 @@ public final class HttpClient {
     }
 
 
-//    public void request(final HttpMethod method, final String url,
-//                        final Map<String, String> queries,
-//                        final Map<String, String> forms)
-//            throws IOException {
-//        request(method, url, queries, forms, null);
-//    }
-//
-//
-//    public void request(final HttpMethod method, final String url,
-//                        final Map<String, String> forms,
-//                        final ResponseCallback responseCallback
-//    ) throws IOException {
-//        callRequest(createRequest(method, url,
-//                null, forms, null), responseCallback);
-//    }
+    public void get(final String url, final RequestParams params, final ResponseCallback responseCallback,
+                    final Object tag) throws IOException {
+        request(HttpMethod.GET, url, params, responseCallback, tag);
+    }
 
-//    public void request(final HttpMethod method, final String url,
-//                        final Map<String, String> queries,
-//                        final Map<String, String> forms,
-//                        final ResponseCallback responseCallback
-//    ) throws IOException {
-//        callRequest(createRequest(method, url,
-//                queries, forms, null), responseCallback);
-//    }
+    public void delete(final String url, final RequestParams params, final ResponseCallback responseCallback,
+                       final Object tag) throws IOException {
+        request(HttpMethod.DELETE, url, params, responseCallback, tag);
+    }
+
+    public void post(final String url, final RequestParams params, final ResponseCallback responseCallback,
+                     final Object tag) throws IOException {
+        request(HttpMethod.POST, url, params, responseCallback, tag);
+    }
+
+    public void put(final String url, final RequestParams params, final ResponseCallback responseCallback,
+                    final Object tag) throws IOException {
+        request(HttpMethod.PUT, url, params, responseCallback, tag);
+    }
+
 
     public void request(final HttpMethod method, final String url,
                         final Map<String, String> queries,
@@ -355,16 +392,18 @@ public final class HttpClient {
         callRequest(createRequest(method, url, requestParams, tag), responseCallback);
     }
 
+
     protected void callRequest(final XRequest xRequest, final ResponseCallback responseCallback) throws IOException {
 
         final Request request = createOkRequest(xRequest);
         final OkHttpClient client = mClient.clone();
+
         responseCallback.sendStartMessage();
-//        if (mDebug || nr.debug()) {
-//            Log.v(NextClient.TAG, "execute() " + nr.dump());
-//            // intercept for logging
-//            client.networkInterceptors().add(new LoggingInterceptor());
-//        }
+
+        if (isDebug) {
+            // intercept for logging
+            client.networkInterceptors().add(new LoggingInterceptor());
+        }
         // intercept for progress callback
 //        if (xRequest.listener() != null) {
 //            client.interceptors().add(new ProgressInterceptor(nr.listener()));
@@ -375,7 +414,7 @@ public final class HttpClient {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Request request, IOException e) {
+            public void onFailure(final Request request, final IOException e) {
                 responseCallback.sendFailureMessage(request, e);
                 responseCallback.sendFinishMessage();
             }
@@ -383,9 +422,9 @@ public final class HttpClient {
             @Override
             public void onResponse(Response response) throws IOException {
 
-                int statusCode = response.code();
-                InputStream responseInputStream = response.body().byteStream();
-                responseCallback.sendSuccessMessage(statusCode, responseInputStream);
+                final int statusCode = response.code();
+                final byte[] responseBytes = response.body().bytes();
+                responseCallback.sendSuccessMessage(statusCode, responseBytes);
                 responseCallback.sendFinishMessage();
             }
         });
@@ -396,9 +435,9 @@ public final class HttpClient {
         final XRequest request = new XRequest(method, url, tag)
                 .headers(mHeaders);
         if (request.supportBody()) {
-            request.forms(mParams);
+//            request.forms(mParams);
         } else {
-            request.queries(mParams);
+//            request.queries(mParams);
         }
         return request.params(params);
     }
@@ -411,10 +450,10 @@ public final class HttpClient {
         final XRequest request = new XRequest(method, url, tag)
                 .headers(mHeaders);
         if (request.supportBody()) {
-            request.forms(mParams);
+//            request.forms(mParams);
             request.forms(forms);
         } else {
-            request.queries(mParams);
+//            request.queries(mParams);
         }
         return request.headers(headers).queries(queries);
     }

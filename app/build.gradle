@@ -30,10 +30,10 @@ dependencies {
 //    compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'de.greenrobot:eventbus:2.4.0'
-    compile 'com.google.code.gson:gson:2.2.4'
+//    compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.r0adkll:slidableactivity:2.0.3'
-    compile 'com.orhanobut:logger:1.11'
+//    compile 'com.orhanobut:logger:1.11'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
 
 
