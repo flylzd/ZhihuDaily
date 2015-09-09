@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,9 +20,9 @@ public abstract class ResponseCallback {
 
 //    protected static final int BUFFER_SIZE = 4 * 1024;
 
-//    final public void sendSuccessMessage(int statusCode, InputStream responseInputStream) {
-//        sendMessage(obtainMessage(SUCCESS_MESSAGE, new Object[]{statusCode, responseInputStream}));
-//    }
+    final public void sendSuccessMessage(int statusCode, InputStream responseInputStream) {
+        sendMessage(obtainMessage(SUCCESS_MESSAGE, new Object[]{statusCode, responseInputStream}));
+    }
 
     final public void sendSuccessMessage(int statusCode, byte[] responseBytes) {
         sendMessage(obtainMessage(SUCCESS_MESSAGE, new Object[]{statusCode, responseBytes}));
@@ -43,13 +44,22 @@ public abstract class ResponseCallback {
     protected final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message message) {
-            Object[] response;
+            final Object[] response;
             switch (message.what) {
                 case SUCCESS_MESSAGE:
                     response = (Object[]) message.obj;
                     if (response != null && response.length >= 2) {
-//                        onSuccess((Integer) response[0], (InputStream) response[1]);
-                        onSuccess((Integer) response[0], (byte[]) response[1]);
+
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+////                                onSuccess((Integer) response[0], (byte[]) response[1]);
+//                            }
+//                        }).start();
+
+                        System.out.println("handleMessage SUCCESS_MESSAGE");
+//                        onUISuccess((Integer) response[0], (InputStream) response[1]);
+//                        onSuccess((Integer) response[0], (byte[]) response[1]);
                     } else {
 //                        Logger.e(LOG_TAG, "SUCCESS_MESSAGE didn't got enough params");
                     }
@@ -57,16 +67,19 @@ public abstract class ResponseCallback {
                 case FAILURE_MESSAGE:
                     response = (Object[]) message.obj;
                     if (response != null && response.length >= 2) {
-                        onFailure((Request) response[0], (IOException) response[1]);
+//                        onFailure((Request) response[0], (IOException) response[1]);
+                        onUIFailure((Request) response[0], (IOException) response[1]);
                     } else {
 //                        Logger.e(LOG_TAG, "FAILURE_MESSAGE didn't got enough params");
                     }
                     break;
                 case START_MESSAGE:
-                    onStart();
+//                    onStart();
+                    onUIStart();
                     break;
                 case FINISH_MESSAGE:
-                    onFinish();
+//                    onFinish();
+                    onUIFinish();
                     break;
             }
 
@@ -90,19 +103,72 @@ public abstract class ResponseCallback {
 
 
     public void onStart() {
+//        sendStartMessage();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                onUIStart();
+            }
+        });
     }
 
     public void onFinish() {
+//        sendFinishMessage();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+              onUIFinish();
+            }
+        });
     }
 
 //    public void onCancel() {
 //    }
 
-    public void onFailure(Request request, Exception e) {
+    public void onFailure(final Request request, final IOException e) {
+//        sendFailureMessage(request, e);
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+//                onUIFinish();
+                onUIFailure(request,e);
+            }
+        });
     }
 
 //    public abstract void onSuccess(int statusCode, InputStream responseInputStream);
 
-    public abstract void onSuccess(int statusCode, byte[] responseBytes);
+//    public abstract void onSuccess(int statusCode, byte[] responseBytes);
+
+    public  void onSuccess(int statusCode, InputStream responseInputStream){
+
+        System.out.println("ResponseCallback onSuccess");
+    }
+
+    public  void onSuccess(Response response){
+
+        System.out.println("ResponseCallback onSuccess");
+
+    }
+
+    public void onUIStart() {
+
+    }
+
+    public void onUIFinish() {
+
+    }
+
+    public void onUIFailure(Request request, Exception e) {
+
+    }
+
+//    public void onUISuccess(int statusCode, InputStream responseInputStream) {
+//
+//    }
+
+    public void onUISuccess(String responseString) {
+    }
+
 
 }

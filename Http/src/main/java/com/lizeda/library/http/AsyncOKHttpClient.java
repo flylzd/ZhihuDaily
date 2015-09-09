@@ -1,6 +1,7 @@
 package com.lizeda.library.http;
 
 
+import com.lizeda.library.core.utils.IOUtils;
 import com.lizeda.library.http.callback.ResponseCallback;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Headers;
@@ -10,6 +11,7 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -395,10 +397,13 @@ public final class AsyncOKHttpClient {
 
     protected void callRequest(final XRequest xRequest, final ResponseCallback responseCallback) throws IOException {
 
+        final boolean hasMultipart = true;
+//        final boolean hasMultipart = xRequest.hasParts();
         final Request request = createOkRequest(xRequest);
         final OkHttpClient client = mClient.clone();
 
-        responseCallback.sendStartMessage();
+//        responseCallback.sendStartMessage();
+        responseCallback.onStart();
 
         if (isDebug) {
             // intercept for logging
@@ -412,20 +417,39 @@ public final class AsyncOKHttpClient {
             mInterceptor.intercept(client);
         }
 
-        client.newCall(request).enqueue(new Callback() {
+        client.newCall(request).enqueue(new Callback() {  //接口回调回来的代码是在非UI线程的，因此如果有更新UI的操作记得用Handler或者其他方式。
             @Override
             public void onFailure(final Request request, final IOException e) {
-                responseCallback.sendFailureMessage(request, e);
-                responseCallback.sendFinishMessage();
+//                responseCallback.sendFailureMessage(request, e);
+//                responseCallback.sendFinishMessage();
+                responseCallback.onFailure(request, e);
+                responseCallback.onFinish();
             }
 
             @Override
             public void onResponse(Response response) throws IOException {
 
+//                Reader reader = response.body().charStream();
+
+//                final String responseString = IOUtils.readString(response.body().byteStream());
+                System.out.println("onResponse responseString === " + response.body().string());
+
+                System.out.println("************* === ************* " );
+
                 final int statusCode = response.code();
                 final byte[] responseBytes = response.body().bytes();
-                responseCallback.sendSuccessMessage(statusCode, responseBytes);
-                responseCallback.sendFinishMessage();
+                responseCallback.onSuccess(response);
+                if (hasMultipart) {
+//                    responseCallback.sendSuccessMessage(statusCode, response.body().byteStream());
+//                    responseCallback.sendFinishMessage();
+//                    responseCallback.onSuccess(statusCode,response.body().byteStream());
+//                    responseCallback.onFinish();
+                } else {
+//                    responseCallback.sendSuccessMessage(statusCode, responseBytes);
+//                    responseCallback.sendFinishMessage();
+//                    responseCallback.onSuccess(statusCode,response.body().byteStream());
+//                    responseCallback.onFinish();
+                }
             }
         });
     }

@@ -7,6 +7,7 @@ import android.view.MenuItem;
 
 import com.lizeda.library.http.AsyncOKHttpClient;
 import com.lizeda.library.http.callback.GsonCallback;
+import com.lizeda.library.http.callback.StringCallback;
 
 import java.io.IOException;
 
@@ -37,8 +38,32 @@ public class MainActivity extends ActionBarActivity {
 //        });
 
         AsyncOKHttpClient httpClient = AsyncOKHttpClient.getDefault();
+        try {
+            httpClient.get("http://www.baidu.com", new StringCallback() {
+
+                @Override
+                public void onUIStart() {
+                    System.out.println("httpClient.get.StringCallback onStart  ");
+                }
+
+                @Override
+                public void onUIFinish() {
+                    System.out.println("httpClient.get.StringCallback onFinish  ");
+                }
+
+                @Override
+                public void onUISuccess(String responseString) {
+
+                    System.out.println("responseString == " + responseString);
+                    System.out.println("httpClient.get.StringCallback onSuccess  ");
+                }
+            }, MainActivity.this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 //        try {
-//            httpClient.get("http://www.baidu.com", new StringCallback(){
+//            httpClient.get("http://www.weather.com.cn/adat/sk/101010100.html", new GsonCallback<Weather>() {
 //
 //                @Override
 //                public void onFinish() {
@@ -51,47 +76,23 @@ public class MainActivity extends ActionBarActivity {
 //                }
 //
 //                @Override
-//                public void onSuccess(String responseString) {
+//                public void onSuccess(Weather responseJson) {
+////                    super.onSuccess(responseJson);
 //
-//                    System.out.println("responseString == " + responseString );
-//                    System.out.println("httpClient.get.StringCallback onSuccess  ");
+//                    System.out.println("httpClient.get.StringCallback onSuccess  " + responseJson.toString());
+//
 //                }
-//            },MainActivity.this);
+//
+//                //                @Override
+////                public void onSuccess(String responseString) {
+////
+////                    System.out.println("responseString == " + responseString);
+////                    System.out.println("httpClient.get.StringCallback onSuccess  ");
+////                }
+//            }, MainActivity.this);
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-
-        try {
-            httpClient.get("http://www.weather.com.cn/adat/sk/101010100.html", new GsonCallback<Weather>() {
-
-                @Override
-                public void onFinish() {
-                    System.out.println("httpClient.get.StringCallback onFinish  ");
-                }
-
-                @Override
-                public void onStart() {
-                    System.out.println("httpClient.get.StringCallback onStart  ");
-                }
-
-                @Override
-                public void onSuccess(Weather responseJson) {
-//                    super.onSuccess(responseJson);
-
-                    System.out.println("httpClient.get.StringCallback onSuccess  " + responseJson.toString());
-
-                }
-
-                //                @Override
-//                public void onSuccess(String responseString) {
-//
-//                    System.out.println("responseString == " + responseString);
-//                    System.out.println("httpClient.get.StringCallback onSuccess  ");
-//                }
-            }, MainActivity.this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
 
     }
