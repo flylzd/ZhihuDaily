@@ -1,10 +1,8 @@
 package com.lizeda.library.http.callback;
 
-import com.lizeda.library.core.Charsets;
-import com.lizeda.library.core.utils.IOUtils;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * 作者：lemon
@@ -12,37 +10,25 @@ import java.io.InputStream;
  */
 public class StringCallback extends ResponseCallback {
 
-//    @Override
-//    public void onSuccess(int statusCode, InputStream responseInputStream) {
-//
-//        try {
-////            String responseString = IOUtils.readString(responseInputStream, Charsets.UTF_8);
-//            String responseString = IOUtils.readString(responseInputStream);
-//
-//            onSuccess(statusCode, responseString);
-//            onSuccess(responseString);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            onFailure(null, e);
-//        }
-//    }
+    @Override
+    public void onResponse(final Response response) throws IOException {
+        try {
+            final int statusCode = response.code();
+            final String responseString = response.body().string();
+            sendOnSuccessMessage(statusCode, responseString);
 
+        } catch (final IOException e) {
+            sendOnErrorMessage(response.request(), e);
+            e.printStackTrace();
+        }
+    }
 
     @Override
-    public void onSuccess(int statusCode, byte[] responseBytes) {
-
-        //            String responseString = IOUtils.readString(responseInputStream, Charsets.UTF_8);
-        String responseString = new String(responseBytes);
-        onSuccess(statusCode, responseString);
-        onSuccess(responseString);
+    public void onSuccess(int statusCode, Object response) {
+        onSuccess((String) response);
     }
 
-    public void onSuccess(int statusCode, String responseString) {
-
-    }
-
-    public void onSuccess(String responseString) {
-
+    public void onSuccess(String response) {
     }
 
 }

@@ -2,12 +2,11 @@ package com.lizeda.library.http.callback;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.internal.$Gson$Types;
+import com.lizeda.library.core.utils.GenericsUtils;
 import com.orhanobut.logger.Logger;
+import com.squareup.okhttp.Response;
 
-import java.io.InputStream;
-import java.lang.reflect.ParameterizedType;
+import java.io.IOException;
 import java.lang.reflect.Type;
 
 /**
@@ -15,52 +14,40 @@ import java.lang.reflect.Type;
  * 日期：2015-09-08
  */
 public class GsonCallback<T> extends ResponseCallback {
-    @Override
-    public void onSuccess(int statusCode, InputStream responseInputStream) {
 
+    private Type type;
+    private Gson gson = new Gson();
+
+    public GsonCallback() {
+        type = GenericsUtils.getSuperClassGenricType(getClass());
+        Logger.d("type == " + type);
     }
 
-//    private final static String TAG = GsonCallback.class.getSimpleName();
-//
-//    private Gson gson = new Gson();
-//    private Type mType;
-//
-//    public GsonCallback() {
-//        mType = getSuperclassTypeParameter(getClass());
-//        Logger.d("ParameterizedType == " + mType);
-//    }
-//
-//   private Type getSuperclassTypeParameter(Class<?> subclass) {
-//        Type superclass = subclass.getGenericSuperclass();
-//        if (superclass instanceof Class) {
-//            throw new RuntimeException("Missing type parameter.");
-//        }
-//        ParameterizedType parameterized = (ParameterizedType) superclass;
-//        return $Gson$Types.canonicalize(parameterized.getActualTypeArguments()[0]);
-//    }
-//
-//    @Override
-//    public void onSuccess(int statusCode, byte[] responseBytes) {
-//
-//        T t = parse(new String(responseBytes));
-//        if (t != null) {
-//            onSuccess(t);
-//        } else {
-////            onFailure(null, new JsonParseException("parse failure"));
-//        }
-//    }
-//
-//    @Override
-//    public void onSuccess(int statusCode, InputStream responseBytes) {
-//
-//    }
-//
-//    public void onSuccess(T responseJson) {
-//    }
-//
-//    public T parse(String json) {
-//        Logger.d("GsonCallback json == " + json);
-//        return gson.fromJson(json, mType);
-//    }
+    @Override
+    public void onResponse(final Response response) throws IOException {
+        try {
+            final int statusCode = response.code();
+            final String responseString = response.body().string();
+            T t = parse(responseString);
+            sendOnSuccessMessage(statusCode, t);
+        } catch (final IOException e) {
+            sendOnErrorMessage(response.request(), e);
+            e.printStackTrace();
+        } catch (final com.google.gson.JsonParseException e) {
+            sendOnErrorMessage(response.request(), new JsonParseException("parse failure"));
+        }
+    }
 
+    @Override
+    public void onSuccess(int statusCode, Object response) {
+        onSuccess((T) response);
+    }
+
+    public void onSuccess(T response) {
+    }
+
+    public T parse(String json) {
+        Logger.d(json);
+        return gson.fromJson(json, type);
+    }
 }
